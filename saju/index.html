@@ -139,7 +139,11 @@ html.emb .seg{border-color:var(--edge);border-radius:9px}
 html.emb .chips{gap:7px}
 html.emb .chips button{border-radius:999px;border-color:var(--edge);padding:11px 2px;font-size:13px}
 html.emb .chips button.wide{border-radius:12px;padding:14px 2px;font-size:15px;box-shadow:0 3px 10px rgba(201,162,39,.35)}
-html.emb button.ghost{border-radius:12px;background:transparent}
+html.emb button.ghost{border-radius:12px;background:var(--gold);color:#2a2000;border:0;font-size:16px;padding:15px 8px;font-weight:800;box-shadow:0 3px 12px rgba(201,162,39,.4)}
+html.emb #pdfEnd{margin:6px auto 18px;text-align:center}
+html.emb #pdfEnd button{background:var(--gold);color:#2a2000;font-size:17px;font-weight:800;padding:16px 10px;border-radius:14px;box-shadow:0 4px 14px rgba(201,162,39,.45)}
+html.emb #pdfEnd p{margin:8px 0 0;font-size:12.5px;color:var(--sub)}
+@media print{#pdfEnd{display:none!important}}
 html.emb .stage{max-height:none;overflow:visible;padding:8px 10px 16px}
 html.emb .empty{padding:26px 10px;background:var(--card);border:1px dashed var(--edge);border-radius:14px}
 html.emb .page{width:100%;min-height:0;padding:24px 18px;border-radius:16px;border:1px solid var(--edge);box-shadow:0 2px 10px rgba(0,0,0,.05);margin:0 auto 14px}
@@ -287,6 +291,16 @@ html.emb .e-m{color:#2e8b57}html.emb .e-h{color:#c0392b}html.emb .e-t{color:#b88
   if(window.ResizeObserver){var w=document.querySelector('.wrap');if(w)new ResizeObserver(send).observe(w);}
   window.addEventListener('load',send);
   document.addEventListener('click',function(){setTimeout(send,60);setTimeout(send,400);},true);
+  /* PDF 버튼 강조: 문구를 바꾸고, 풀이 맨 아래에도 큰 버튼을 붙임 */
+  var PDFTXT='여기를 눌러서 PDF로 저장해 주세요';
+  [].forEach.call(document.querySelectorAll('button.ghost'),function(b){if(/PDF/.test(b.textContent))b.textContent=PDFTXT;});
+  function pdfEnd(){
+    var s=document.getElementById('stage');if(!s||!s.querySelector('.page'))return;
+    var e=document.getElementById('pdfEnd');
+    if(!e){e=document.createElement('div');e.id='pdfEnd';e.innerHTML='<button type="button">'+PDFTXT+'</button><p>새 창이 열리면 아래 PDF로 저장 버튼을 한 번 더 누르면 됩니다.</p>';e.querySelector('button').onclick=function(){window.savePdf();};}
+    if(e.parentNode!==s||s.lastElementChild!==e)s.appendChild(e);
+  }
+  if(stg&&window.MutationObserver)new MutationObserver(function(){pdfEnd();}).observe(stg,{childList:true});
   paint();send();
 
   /* PDF: 칸 안에서는 인쇄가 막히는 폰이 많아 새 탭(단독 화면)으로 넘겨서 저장 */
